@@ -1,22 +1,39 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Alfabetsspelet</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
 </head>
 <body>
 
   <!-- Startskärm -->
   <div id="startScreen" class="screen">
-    <button id="playBtn">Spela!</button>
+    <div class="start-hero">
+      <h1 class="start-title">Alfabetsspelet</h1>
+      <button id="playBtn" class="btn btn-play" aria-label="Starta spelet">Spela!</button>
+    </div>
   </div>
 
   <!-- Spelskärm -->
   <div id="gameScreen" class="hidden">
-    <div id="cardContainer" class="grid"></div>
+    <div class="page">
+      <header class="topbar">
+        <h2 aria-label="Alfabetsspelet">Alfabetsspelet</h2>
+      </header>
+      <main>
+        <div id="cardContainer" class="grid" aria-live="polite"></div>
+      </main>
+    </div>
   </div>
 
 </body>
