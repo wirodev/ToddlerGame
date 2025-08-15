@@ -1,10 +1,9 @@
-// DOM
 const playBtn = document.getElementById('playBtn');
 const startScreen = document.getElementById('startScreen');
 const gameScreen = document.getElementById('gameScreen');
 const cardContainer = document.getElementById('cardContainer');
 
-/* Color pairs */
+/* 12 färgpar */
 const colorPairs = [
   { text: "#FF0000", bg: "#FFE5E5" }, { text: "#007BFF", bg: "#E5F0FF" },
   { text: "#FFD500", bg: "#FFF9E5" }, { text: "#00CC00", bg: "#E5FFE5" },
@@ -14,14 +13,14 @@ const colorPairs = [
   { text: "#228B22", bg: "#E5F5E5" }, { text: "#1E90FF", bg: "#E5F1FF" }
 ];
 
-/* Animals (paths assume images outside /game and sounds outside /game) */
+/* Svenska A–Ö (paths per your setup: ../images and ../sounds) */
 const animals = [
   { letter:"A", name:"Apa",        img:"../images/a_apa.png",        sound:"../sounds/a_apa.mp3",        fact:"Apan gillar att äta bananer." },
   { letter:"B", name:"Björn",      img:"../images/b_bjorn.png",      sound:"../sounds/b_bjorn.mp3",      fact:"Björnen sover hela vintern." },
   { letter:"C", name:"Chinchilla", img:"../images/c_chinchilla.png", sound:"../sounds/c_chinchilla.mp3", fact:"Chinchillan är känd för sin mjuka päls." },
   { letter:"D", name:"Delfin",     img:"../images/d_delfin.png",     sound:"../sounds/d_delfin.mp3",     fact:"Delfinen hoppar högt i vattnet." },
   { letter:"E", name:"Elefant",    img:"../images/e_elefant.png",    sound:"../sounds/e_elefant.mp3",    fact:"Elefanten har en lång snabel." },
-  { letter:"F", name:"Får",        img:"../images/f_far.png",        sound:"../sounds/f_far.mp3",        fact:"Fåret säger ”bää”." },
+  { letter:"F", name:"Får",        img:"../images/f_far.png",        sound:"../sounds/f_far.mp3",        fact:"Fåret säger 'bää'." },
   { letter:"G", name:"Giraff",     img:"../images/g_giraff.png",     sound:"../sounds/g_giraff.mp3",     fact:"Giraffen har en lång hals." },
   { letter:"H", name:"Hund",       img:"../images/h_hund.png",       sound:"../sounds/h_hund.mp3",       fact:"Hunden viftar på svansen när den är glad." },
   { letter:"I", name:"Igelkott",   img:"../images/i_igelkott.png",   sound:"../sounds/i_igelkott.mp3",   fact:"Igelkotten har taggar på ryggen." },
@@ -47,7 +46,7 @@ const animals = [
   { letter:"Ö", name:"Örn",        img:"../images/oe_orn.png",       sound:"../sounds/oe_orn.mp3",       fact:"Örnen flyger högt över skogen." }
 ];
 
-/* Preload & reuse audio */
+/* Preload & reuse audio for snappy playback */
 const audioMap = new Map();
 animals.forEach(a => {
   const el = new Audio(a.sound);
@@ -55,40 +54,30 @@ animals.forEach(a => {
   audioMap.set(a.letter, el);
 });
 
-/* Start game */
 playBtn.addEventListener('click', () => {
   startScreen.classList.add('hidden');
   gameScreen.classList.remove('hidden');
-  buildCards();
+  createCards();
 });
 
-/* Build cards */
-function buildCards(){
-  const frag = document.createDocumentFragment();
-
-  animals.forEach((animal, idx) => {
-    const colors = colorPairs[idx % colorPairs.length];
+function createCards() {
+  animals.forEach((animal, index) => {
+    const colors = colorPairs[index % colorPairs.length];
 
     const card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('role','button');
-    card.setAttribute('tabindex','0');
-    card.setAttribute('aria-label', `${animal.letter} som i ${animal.name}`);
-    card.style.setProperty('--card-accent', colors.text);
-    card.style.setProperty('--card-bg', colors.bg);
-
-    const inner = document.createElement('div');
-    inner.className = 'card-inner';
+    card.classList.add('card');
 
     const front = document.createElement('div');
-    front.className = 'face front';
+    front.classList.add('front');
     front.textContent = animal.letter;
+    front.style.color = colors.text;
+    front.style.backgroundColor = colors.bg;
+    front.style.borderColor = colors.text;
 
-    const back  = document.createElement('div');
-    back.className = 'face back';
-
-    const imgWrap = document.createElement('div');
-    imgWrap.className = 'img-wrap';
+    const back = document.createElement('div');
+    back.classList.add('back');
+    back.style.backgroundColor = '#fff';
+    back.style.borderColor = colors.text;
 
     const img = document.createElement('img');
     img.src = animal.img;
@@ -97,42 +86,31 @@ function buildCards(){
     img.decoding = 'async';
     img.draggable = false;
 
-    imgWrap.appendChild(img);
+    const nameTag = document.createElement('div');
+    nameTag.classList.add('name-tag');
+    nameTag.textContent = animal.name;
 
-    const name = document.createElement('p');
-    name.className = 'name-tag';
-    name.textContent = animal.name;
+    const factTag = document.createElement('div');
+    factTag.classList.add('fact-text');
+    factTag.textContent = animal.fact;
 
-    const fact = document.createElement('p');
-    fact.className = 'fact-text';
-    fact.textContent = animal.fact;
+    back.appendChild(img);
+    back.appendChild(nameTag);
+    back.appendChild(factTag);
 
-    back.appendChild(imgWrap);
-    back.appendChild(name);
-    back.appendChild(fact);
+    card.appendChild(front);
+    card.appendChild(back);
 
-    inner.appendChild(front);
-    inner.appendChild(back);
-    card.appendChild(inner);
-
-    const activate = () => {
-      const showBack = card.classList.toggle('flipped');
-      if (showBack){
+    card.addEventListener('click', () => {
+      const isFlipped = card.classList.toggle('flipped');
+      if (isFlipped) {
         const audio = audioMap.get(animal.letter);
-        if (audio){
-          try{ audio.currentTime = 0; audio.play().catch(()=>{}); } catch(_){}
+        if (audio) {
+          try { audio.currentTime = 0; audio.play().catch(()=>{}); } catch(_) {}
         }
       }
-    };
-
-    card.addEventListener('click', activate);
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
     });
 
-    frag.appendChild(card);
+    document.getElementById('cardContainer').appendChild(card);
   });
-
-  cardContainer.textContent = '';
-  cardContainer.appendChild(frag);
 }
