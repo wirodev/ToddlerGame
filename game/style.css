@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Chewy&display=swap');
+
+* {
+  box-sizing: border-box; /* Gör att border inte ändrar storlek */
+}
+
+body {
+  margin: 0;
+  background: #3e3e3e;
+  font-family: 'Chewy', cursive;
+}
+
+.screen {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#startScreen {
+  background: url('assets/bg.jpg') no-repeat center center / cover;
+}
+
+button {
+  padding: 1rem 2rem;
+  font-size: 2.5rem;
+  border: none;
+  background: #3e414b;
+  color: white;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ff9933;
+}
+
+.hidden { display: none; }
+
+.grid {
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem; padding: .5rem; justify-content: center;
+}
+
+.card {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  perspective: 1200px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-in-out;
+}
+
+.card.flipped { transform: rotateY(180deg); }
+
+.card .front,
+.card .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 5px solid;
+  border-radius: 15px;
+  backface-visibility: hidden;
+  transform-origin: center;
+}
+
+.card .front {
+  font-size: clamp(6rem, 18vmin, 20rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card .back {
+  transform: rotateY(180deg);
+  background: white;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card img {
+  width: 80%;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.name-tag {
+  font-size: 3em;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.fact-text {
+  font-size: 1.6em;
+  text-align: center;
+  color: #333;
+  max-width: 90%;
+}
+
+@media (min-width: 1024px) { 
+    .grid { grid-template-columns: repeat(4, 1fr); }
+    .card .front { font-size: 20em; }
+}
+@media (min-width: 768px) and (max-width: 1023px) { 
+    .grid { grid-template-columns: repeat(3, 1fr); } 
+    .card .front { font-size: 15em; }
+}
+@media (max-width: 767px) { 
+    .grid { grid-template-columns: repeat(1, 1fr); } 
+    .card .front { font-size: 18em; }
+}
