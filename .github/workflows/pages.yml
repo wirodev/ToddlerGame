@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]     # change if your default branch differs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # Build a publishable folder that mirrors the structure you need at runtime
+      - name: Build dist
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          # put the game files at the site root
+          cp -r game/* dist/
+          # copy assets next to them so ../images and ../sounds resolve
+          cp -r images dist/images
+          cp -r sounds dist/sounds
+          # avoid Jekyll processing
+          touch dist/.nojekyll
+          # list result for debugging
+          echo "----- dist tree -----"
+          ls -R dist
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
