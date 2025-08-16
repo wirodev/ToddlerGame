@@ -34,7 +34,7 @@ body {
 #startScreen {
   background:
     linear-gradient(0deg, rgba(0,0,0,.28), rgba(0,0,0,.28)),
-    url('../images/bg.png') center / cover no-repeat;
+    url('images/bg.png') center / cover no-repeat;
 }
 
 .start-hero { display:flex; flex-direction:column; align-items:center; gap:1rem; }
