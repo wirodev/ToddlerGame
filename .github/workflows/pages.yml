@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]     # change if your default branch differs
+    branches: [ main ]         # change if your default branch is different
   workflow_dispatch:
 
 permissions:
@@ -15,12 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,27 +24,24 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      # Build a publishable folder that mirrors the structure you need at runtime
-      - name: Build dist
+      - name: Prepare root for publish
         run: |
-          rm -rf dist
-          mkdir -p dist
-          # put the game files at the site root
-          cp -r game/* dist/
-          # copy assets next to them so ../images and ../sounds resolve
-          cp -r images dist/images
-          cp -r sounds dist/sounds
-          # avoid Jekyll processing
-          touch dist/.nojekyll
-          # list result for debugging
-          echo "----- dist tree -----"
-          ls -R dist
+          # prevent Jekyll from hiding folders like /images or files starting with underscore
+          touch .nojekyll
+          echo "Publishing repo root:"
+          ls -la
 
-      - name: Upload artifact
+      - name: Upload artifact (root)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: .               # publish the repo root
 
-      - name: Deploy
-        id: deployment
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
         uses: actions/deploy-pages@v4
